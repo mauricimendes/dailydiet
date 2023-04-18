@@ -1,19 +1,27 @@
-import styled from 'styled-components/native'
+import styled, { css } from 'styled-components/native'
 import { SafeAreaView } from 'react-native-safe-area-context'
-import { ArrowUpRight } from 'phosphor-react-native'
 
 export const Container = styled(SafeAreaView)`
   flex: 1;
 
-  padding: 24px 24px 0 24px;
-
   background-color: ${({ theme }) => theme.COLORS.GRAY_700};
+`
+
+export const Content = styled.ScrollView`
+  flex: 1;
+  padding: 24px 24px 24px 24px;
+`
+
+export const List = styled.View`
+  padding-bottom: 24px;
 `
 
 export const Header = styled.View`
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
+
+  margin-bottom: 32px;
 `
 
 export const Logo = styled.Image`
@@ -31,4 +39,15 @@ export const AvatarContent = styled.Image`
   height: 100%;
   width: 100%;
   border-radius: 20px;
+`
+
+export const MealsTitle = styled.Text`
+  margin-top: 40px;
+  margin-bottom: 8px;
+
+  ${({ theme }) => css`
+    font-size: ${theme.FONT_SIZE.MEDIUM_SMALL}px;
+    font-family: ${theme.FONT_FAMILY.REGULAR};
+    color: ${theme.COLORS.GRAY_100};
+  `}
 `
