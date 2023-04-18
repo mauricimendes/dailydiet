@@ -125,9 +125,9 @@ export function Home() {
         </MealsTitle>
 
         <Button
-          activeOpacity={0.8}
           title='Nova refeição'
           icon='add'
+          onPress={() => navigation.navigate('feedback', { type: 'negative' })}
         />
         <List>
           <SectionList

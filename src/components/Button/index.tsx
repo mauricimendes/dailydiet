@@ -17,7 +17,7 @@ type Props = TouchableOpacityProps & {
 
 export function Button({ title, type = 'solid', icon, ...rest }: Props) {
   return (
-    <Container type={type} {...rest}>
+    <Container type={type} {...rest} activeOpacity={0.8}>
       {icon === 'add' ? <AddIcon type={type} /> :
         icon === 'trash' ? <TrashIcon type={type} /> :
           icon === 'edit' ? <EditIcon type={type} /> : null
