@@ -127,7 +127,7 @@ export function Home() {
         <Button
           title='Nova refeição'
           icon='add'
-          onPress={() => navigation.navigate('feedback', { type: 'negative' })}
+          onPress={() => navigation.navigate('create')}
         />
         <List>
           <SectionList

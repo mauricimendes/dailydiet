@@ -6,6 +6,7 @@ export declare global {
       feedback: {
         type: string
       }
+      create: undefined
     }
   }
 }
