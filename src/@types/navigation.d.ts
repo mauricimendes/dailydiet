@@ -7,6 +7,9 @@ export declare global {
         type: string
       }
       create: undefined
+      details: {
+        meal_id: string
+      }
     }
   }
 }

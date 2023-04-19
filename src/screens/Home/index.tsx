@@ -140,6 +140,7 @@ export function Home() {
                 name={item.name}
                 hour={item.hour}
                 type={item.type}
+                onPress={() => navigation.navigate('details', { meal_id: item.id })}
               />
             )}
             renderSectionHeader={({ section: { title } }) => (

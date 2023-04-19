@@ -56,7 +56,10 @@ export function Create() {
   return (
     <Container>
       <Header>
-        <BackButton onPress={() => console.log('teste')} activeOpacity={0.8}>
+        <BackButton
+          onPress={() => navigation.navigate('home')}
+          activeOpacity={0.8}
+        >
           <BackButtonIcon />
         </BackButton>
 
