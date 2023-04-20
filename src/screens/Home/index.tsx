@@ -1,5 +1,5 @@
-import { SectionList } from 'react-native'
-import { useNavigation } from '@react-navigation/native'
+import { Alert, SectionList, Text, View } from 'react-native'
+import { useNavigation, useFocusEffect } from '@react-navigation/native'
 
 import logoPng from '@assets/logo.png'
 import avatar from '@assets/avatar.jpeg'
@@ -12,13 +12,17 @@ import {
   AvatarContent,
   MealsTitle,
   Content,
-  List
+  List,
+  ListEmpty,
+  Loading
 } from './styles'
 
 import { Percent } from '@components/Percent'
 import { Button } from '@components/Button'
 import { Meal, MealTitle } from '@components/Meal'
 import { TypeDiet } from '@components/Meal/styles'
+import { mealGetAll } from '@storage/meals/mealGetAll'
+import { useCallback, useMemo, useState } from 'react'
 
 type Meal = {
   id: string
@@ -32,70 +36,57 @@ type Meals = {
   data: Meal[]
 }
 
-const DATA: Meals[] = [
-  {
-    title: '15.04.23',
-    data: [
-      {
-        id: '1',
-        name: 'café',
-        hour: '09:00',
-        type: 'allow'
-      },
-      {
-        id: '2',
-        name: 'almoço',
-        hour: '09:00',
-        type: 'bellow'
-      }, {
-        id: '3',
-        name: 'janta',
-        hour: '09:00',
-        type: 'bellow'
-      },
-    ],
-  },
-  {
-    title: '15.04.23',
-    data: [
-      {
-        id: '4',
-        name: 'café',
-        hour: '09:00',
-        type: 'allow'
-      },
-      {
-        id: '5',
-        name: 'almoço',
-        hour: '09:00',
-        type: 'bellow'
-      }, {
-        id: '6',
-        name: 'almoço',
-        hour: '09:00',
-        type: 'bellow'
-      }, {
-        id: '7',
-        name: 'almoço',
-        hour: '09:00',
-        type: 'bellow'
-      }, {
-        id: '8',
-        name: 'almoço',
-        hour: '09:00',
-        type: 'bellow'
-      }, {
-        id: '9',
-        name: 'almoço',
-        hour: '09:00',
-        type: 'bellow'
-      }
-    ],
-  }
-]
-
 export function Home() {
   const navigation = useNavigation()
+
+  const [isLoading, setIsLoading] = useState(true)
+  const [meals, setMeals] = useState<Meals[]>([])
+
+  async function fetchMeals() {
+    try {
+      setIsLoading(true)
+      const meals = await mealGetAll()
+      const data: Meals[] = []
+
+      const allDays = meals.map(meal => meal.date)
+      const days = [...new Set(allDays)]
+
+      days.map(day => data.push({
+        title: day,
+        data: []
+      }))
+
+      data.map(d => meals.map(meal => {
+        if (meal.date === d.title) {
+          d.data.push(meal as Meal)
+        }
+      }))
+
+      setMeals(data)
+
+    } catch (error) {
+      console.log(error)
+      Alert.alert('Refeições', 'Não foi possível carregas as refeições')
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  const percentage = useMemo(() => {
+    const onlyMeals: Meal[] = []
+    var numberMealsAbove = 0
+
+    meals.map(meal => meal.data.map(d => onlyMeals.push(d)))
+    numberMealsAbove = onlyMeals.filter(meal => meal.type === 'above').length
+
+    if (meals.length === 0) return 0
+
+    return Number(((100 * numberMealsAbove) / onlyMeals.length).toFixed(2))
+  }, [meals])
+
+  useFocusEffect(useCallback(() => {
+    fetchMeals()
+  }, []))
 
   return (
     <Container>
@@ -113,12 +104,13 @@ export function Home() {
           </Avatar>
         </Header>
 
-        <Percent
+        {percentage !== 0 && <Percent
           activeOpacity={0.8}
-          title='90,00%'
+          title={`${percentage}%`}
           subtitle='das refeições dentro da dieta'
+          dietType={percentage >= 50 ? 'above' : 'bellow'}
           onPress={() => navigation.navigate('statistic')}
-        />
+        />}
 
         <MealsTitle>
           Refeições
@@ -130,24 +122,36 @@ export function Home() {
           onPress={() => navigation.navigate('create')}
         />
         <List>
-          <SectionList
-            sections={DATA}
-            keyExtractor={item => item.id}
-            scrollEnabled={false}
-            renderItem={({ item }) => (
-              <Meal
-                activeOpacity={0.8}
-                name={item.name}
-                hour={item.hour}
-                type={item.type}
-                onPress={() => navigation.navigate('details', { meal_id: item.id })}
-              />
-            )}
-            renderSectionHeader={({ section: { title } }) => (
-              <MealTitle title={title} />
-            )}
-            showsVerticalScrollIndicator={false}
-          />
+          {isLoading ?
+            <Loading style={{ flex: 1 }}>
+              <ListEmpty>
+                Carregando...
+              </ListEmpty>
+            </Loading>
+            : <SectionList
+              sections={meals}
+              keyExtractor={item => item.id}
+              scrollEnabled={false}
+              renderItem={({ item }) => (
+                <Meal
+                  activeOpacity={0.8}
+                  name={item.name}
+                  hour={item.hour}
+                  type={item.type}
+                  onPress={() => navigation.navigate('details', { meal_id: item.id })}
+                />
+              )}
+              renderSectionHeader={({ section: { title } }) => (
+                <MealTitle title={title} />
+              )}
+              contentContainerStyle={meals.length === 0 && { marginTop: 124, alignItems: 'center' }}
+              ListEmptyComponent={() => (
+                <ListEmpty>
+                  Cadastre suas refeições!
+                </ListEmpty>
+              )}
+              showsVerticalScrollIndicator={false}
+            />}
         </List>
       </Content>
     </Container>

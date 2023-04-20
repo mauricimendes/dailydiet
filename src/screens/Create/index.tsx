@@ -1,5 +1,5 @@
 import { useCallback, useMemo, useRef, useState } from 'react'
-import { TextInput, View } from 'react-native'
+import { Alert, TextInput, View } from 'react-native'
 import { useNavigation } from '@react-navigation/native'
 
 import {
@@ -17,6 +17,10 @@ import { Button } from '@components/Button'
 import { Input } from '@components/Input'
 import { dateMask, hourMask } from '@components/Input/masks'
 import { Select } from '@components/Select'
+import { AppError } from '@utils/AppError'
+import { mealCreate } from '@storage/meals/mealCreate'
+import { SelectType } from '@components/Select/styltes'
+import { mealGetAll } from '@storage/meals/mealGetAll'
 
 export function Create() {
   const navigation = useNavigation()
@@ -31,11 +35,11 @@ export function Create() {
   const dateInputRef = useRef<TextInput>(null)
   const hourInputRef = useRef<TextInput>(null)
 
-  const [selected, setSelected] = useState('')
+  const [selected, setSelected] = useState<SelectType>('' as SelectType)
 
-  const handleSelectedTypeMeal = useCallback((value: string) => {
+  const handleSelectedTypeMeal = useCallback((value: SelectType) => {
     if (value === selected) {
-      setSelected('')
+      setSelected('' as SelectType)
       return
     }
     setSelected(value)
@@ -49,8 +53,28 @@ export function Create() {
     return hourMask(hour)
   }, [hour])
 
-  function handleCreate() {
-    navigation.navigate('feedback', { type: selected })
+  async function handleCreate() {
+    try {
+      const dayFormatted = renderDateMask.replaceAll('/', '.')
+
+      await mealCreate({
+        date: dayFormatted,
+        hour: renderHourMask,
+        name,
+        description,
+        type: selected
+      })
+
+      navigation.navigate('feedback', { type: selected })
+    } catch (error) {
+      if (error instanceof AppError) {
+        Alert.alert('Nova refeição', error.message)
+      } else {
+        Alert.alert('Nova refeição', 'Não foi possível criar a refeiçao.')
+        console.log(error)
+      }
+    }
+
   }
 
   return (
@@ -114,20 +138,20 @@ export function Create() {
           <FormRow>
             <Select
               title='Sim'
-              selected={selected === 'positive'}
-              type='positive'
+              selected={selected === 'above'}
+              type='above'
               style={{ flex: 1 }}
               activeOpacity={0.8}
-              onPress={() => handleSelectedTypeMeal('positive')}
+              onPress={() => handleSelectedTypeMeal('above')}
             />
 
             <Select
               title='Não'
-              selected={selected === 'negative'}
-              type='negative'
+              selected={selected === 'bellow'}
+              type='bellow'
               style={{ flex: 1 }}
               activeOpacity={0.8}
-              onPress={() => handleSelectedTypeMeal('negative')}
+              onPress={() => handleSelectedTypeMeal('bellow')}
             />
           </FormRow>
         </Form>

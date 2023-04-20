@@ -28,24 +28,24 @@ export function Feedback() {
     <Container>
 
       <Title type={type}>
-        {type === 'positive' ? 'Continue assim!' : 'Que pena!'}
+        {type === 'above' ? 'Continue assim!' : 'Que pena!'}
       </Title>
 
       <Text style={{ flexDirection: 'row', textAlign: 'center' }}>
         <Subtitle>
-          {type === 'positive' ? 'Você continua ' : 'Você '}
+          {type === 'above' ? 'Você continua ' : 'Você '}
         </Subtitle>
 
         <Bold>
-          {type === 'positive' ? 'dentro da dieta. ' : 'saiu da dieta '}
+          {type === 'above' ? 'dentro da dieta. ' : 'saiu da dieta '}
         </Bold>
 
         <Subtitle>
-          {type === 'positive' ? 'Muito bem!' : 'dessa vez, mas continue se esforçando e não desista!'}
+          {type === 'above' ? 'Muito bem!' : 'dessa vez, mas continue se esforçando e não desista!'}
         </Subtitle>
       </Text>
 
-      <Avatar source={type === 'positive' ? positiveFeedbackImage : negativeFeedbackImage} />
+      <Avatar source={type === 'above' ? positiveFeedbackImage : negativeFeedbackImage} />
 
       <Button
         title='Ir para página inicial'

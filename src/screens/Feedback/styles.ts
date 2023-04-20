@@ -1,6 +1,6 @@
 import styled, { css } from 'styled-components/native'
 
-export type FeedbackType = 'positive' | 'negative'
+export type FeedbackType = 'above' | 'bellow'
 
 type Props = {
   type: FeedbackType
@@ -22,7 +22,7 @@ export const Title = styled.Text<Props>`
   ${({ theme, type }) => css`
     font-size: ${theme.FONT_SIZE.LARGE}px;
     font-family: ${theme.FONT_FAMILY.REGULAR};
-    color: ${type === 'positive' ? css`${theme.COLORS.GREEN_DARK}` : `${theme.COLORS.RED_DARK}`} ;
+    color: ${type === 'above' ? css`${theme.COLORS.GREEN_DARK}` : `${theme.COLORS.RED_DARK}`} ;
   `}
 
   text-align: center;

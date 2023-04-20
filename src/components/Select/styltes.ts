@@ -1,21 +1,21 @@
 import styled, { css } from 'styled-components/native'
 
-export type SelectType = 'positive' | 'negative'
+export type SelectType = 'above' | 'bellow'
 
 type Props = {
   type: SelectType
-  selected: boolean
+  selected?: boolean
 }
 
 export const Container = styled.TouchableOpacity<Props>`
   height: 50px;
   ${({ theme, type, selected }) => css`
-    background-color: ${type === 'positive' && selected ? theme.COLORS.GREEN_LIGHT :
-      type === 'negative' && selected ? theme.COLORS.RED_LIGHT :
+    background-color: ${type === 'above' && selected ? theme.COLORS.GREEN_LIGHT :
+      type === 'bellow' && selected ? theme.COLORS.RED_LIGHT :
         theme.COLORS.GRAY_600
     };
-    border: 1px solid ${type === 'positive' && selected ? theme.COLORS.GREEN_DARK :
-      type === 'negative' && selected ? theme.COLORS.RED_DARK :
+    border: 1px solid ${type === 'above' && selected ? theme.COLORS.GREEN_DARK :
+      type === 'bellow' && selected ? theme.COLORS.RED_DARK :
         theme.COLORS.GRAY_600};
   `}
   border-radius: 6px;
@@ -31,7 +31,7 @@ export const Dot = styled.View<Props>`
   width: 8px;
   border-radius: 4px;
 
-  background-color: ${({ theme, type }) => type === 'positive' ? theme.COLORS.GREEN_DARK : theme.COLORS.RED_DARK};
+  background-color: ${({ theme, type }) => type === 'above' ? theme.COLORS.GREEN_DARK : theme.COLORS.RED_DARK};
 `
 
 export const Title = styled.Text`

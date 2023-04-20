@@ -1,6 +1,6 @@
 import styled, { css } from 'styled-components/native'
 
-export type TypeDiet = 'allow' | 'bellow'
+export type TypeDiet = 'above' | 'bellow'
 
 type Props = {
   type: TypeDiet
@@ -49,7 +49,7 @@ export const DotTypeMeal = styled.View<Props>`
   height: 14px;
   width: 14px;
   border-radius: 7px;
-  background-color: ${({ theme, type }) => type === 'allow' ? theme.COLORS.GREEN_MID : theme.COLORS.RED_MID};
+  background-color: ${({ theme, type }) => type === 'above' ? theme.COLORS.GREEN_MID : theme.COLORS.RED_MID};
 `
 
 export const Title = styled.Text`

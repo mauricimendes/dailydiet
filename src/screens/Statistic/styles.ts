@@ -1,7 +1,7 @@
 import styled, { css } from 'styled-components/native'
 import { ArrowLeft } from 'phosphor-react-native'
 
-export type DietType = 'allow' | 'bellow'
+export type DietType = 'above' | 'bellow'
 
 type Props = {
   type?: DietType
@@ -16,7 +16,7 @@ export const Header = styled.View<Props>`
   height: 200px;
   width: 100%;
 
-  background-color: ${({ theme, type }) => type === 'allow' ? theme.COLORS.GREEN_LIGHT : theme.COLORS.RED_LIGHT};
+  background-color: ${({ theme, type }) => type === 'above' ? theme.COLORS.GREEN_LIGHT : theme.COLORS.RED_LIGHT};
   justify-content: center;
   align-items: center;
 `
@@ -76,7 +76,7 @@ export const Info = styled.View<Props>`
   margin-bottom: 16px;
 
   ${({ theme, type }) =>
-    type === 'allow' ?
+    type === 'above' ?
       css`
         background-color: ${theme.COLORS.GREEN_LIGHT};
     ` : type === 'bellow' ?

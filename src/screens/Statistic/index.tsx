@@ -12,8 +12,7 @@ import {
   Info,
   InfoTitle,
   InfoSubtitle,
-  InfoRow,
-  DietType
+  InfoRow
 } from './styles'
 
 export function Statistic() {
@@ -21,7 +20,7 @@ export function Statistic() {
 
   return (
     <Container>
-      <Header type='allow'>
+      <Header type='above'>
         <HeaderBackButton
           activeOpacity={0.8}
           onPress={() => navigation.navigate('home')}
@@ -60,7 +59,7 @@ export function Statistic() {
         </Info>
 
         <InfoRow>
-          <Info type='allow' style={{ flex: 1 }}>
+          <Info type='above' style={{ flex: 1 }}>
             <InfoTitle>
               99
             </InfoTitle>

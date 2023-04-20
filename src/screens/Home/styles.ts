@@ -51,3 +51,17 @@ export const MealsTitle = styled.Text`
     color: ${theme.COLORS.GRAY_100};
   `}
 `
+
+export const ListEmpty = styled.Text`
+  ${({ theme }) => css`
+    font-size: ${theme.FONT_SIZE.MEDIUM_SMALL}px;
+    font-family: ${theme.FONT_FAMILY.REGULAR};
+    color: ${theme.COLORS.GRAY_100};
+  `}
+`
+
+export const Loading = styled.View`
+  flex: 1;
+  margin-top: 124px;
+  align-items: center;
+`
