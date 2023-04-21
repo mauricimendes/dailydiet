@@ -23,6 +23,7 @@ import { Meal, MealTitle } from '@components/Meal'
 import { TypeDiet } from '@components/Meal/styles'
 import { mealGetAll } from '@storage/meals/mealGetAll'
 import { useCallback, useMemo, useState } from 'react'
+import { LinearGradient } from 'expo-linear-gradient'
 
 type Meal = {
   id: string
@@ -155,6 +156,10 @@ export function Home() {
             />}
         </List>
       </Content>
+      <LinearGradient
+        colors={['transparent', '#FAFAFA']}
+        style={{ position: 'absolute', bottom: 0, width: '100%', height: 160 }}
+      />
     </Container>
   )
 }
