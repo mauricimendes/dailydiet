@@ -1,6 +1,6 @@
 import { useCallback, useMemo, useRef, useState } from 'react'
-import { Alert, TextInput, View } from 'react-native'
-import { useNavigation } from '@react-navigation/native'
+import { Alert, Text, TextInput, View } from 'react-native'
+import { useFocusEffect, useNavigation, useRoute } from '@react-navigation/native'
 
 import {
   Container,
@@ -11,31 +11,58 @@ import {
   Body,
   Form,
   FormRow
-} from './styles'
+} from '../Create/styles'
 
 import { Button } from '@components/Button'
 import { Input } from '@components/Input'
 import { dateMask, hourMask } from '@components/Input/masks'
 import { Select } from '@components/Select'
 import { AppError } from '@utils/AppError'
-import { mealCreate } from '@storage/meals/mealCreate'
 import { SelectType } from '@components/Select/styltes'
+import { mealGetById } from '@storage/meals/mealGetById'
+import { mealEdit } from '@storage/meals/mealEdit'
 
-export function Create() {
+type RouteParams = {
+  mealId: string
+}
+
+export function Edit() {
   const navigation = useNavigation()
+  const route = useRoute()
+  const { mealId } = route.params as RouteParams
 
+  const [isLoading, setIsLoading] = useState(true)
   const [name, setName] = useState('')
   const [description, setDescription] = useState('')
   const [date, setDate] = useState('')
   const [hour, setHour] = useState('')
+  const [selected, setSelected] = useState<SelectType>('' as SelectType)
 
   const nameInputRef = useRef<TextInput>(null)
   const descriptionInputRef = useRef<TextInput>(null)
   const dateInputRef = useRef<TextInput>(null)
   const hourInputRef = useRef<TextInput>(null)
 
-  const [selected, setSelected] = useState<SelectType>('' as SelectType)
-
+  async function fetchMeal() {
+    try {
+      setIsLoading(true)
+      const meal = await mealGetById(mealId)
+      setName(meal.name)
+      setDescription(meal.description)
+      setDate(meal.date)
+      setHour(meal.hour)
+      setSelected(meal.type)
+    } catch (error) {
+      if (error instanceof AppError) {
+        Alert.alert('Refeições', error.message)
+      } else {
+        console.log(error)
+        Alert.alert('Refeições', 'Não foi possível concluir.')
+      }
+    } finally {
+      setIsLoading(false)
+    }
+  }
   const handleSelectedTypeMeal = useCallback((value: SelectType) => {
     if (value === selected) {
       setSelected('' as SelectType)
@@ -52,7 +79,7 @@ export function Create() {
     return hourMask(hour)
   }, [hour])
 
-  async function handleCreate() {
+  async function handleEdit() {
     try {
       const dayFormatted = renderDateMask.replaceAll('/', '.')
 
@@ -60,13 +87,13 @@ export function Create() {
         throw new AppError('Preencha todos os campos!')
       }
 
-      await mealCreate({
+      await mealEdit({
         date: dayFormatted,
         hour: renderHourMask,
         name,
         description,
         type: selected
-      })
+      }, mealId)
 
       navigation.navigate('feedback', { type: selected })
     } catch (error) {
@@ -77,14 +104,17 @@ export function Create() {
         console.log(error)
       }
     }
-
   }
+
+  useFocusEffect(useCallback(() => {
+    fetchMeal()
+  }, []))
 
   return (
     <Container>
       <Header>
         <BackButton
-          onPress={() => navigation.navigate('home')}
+          onPress={() => navigation.navigate('details', { mealId: `${date}-${hour}` })}
           activeOpacity={0.8}
         >
           <BackButtonIcon />
@@ -97,7 +127,7 @@ export function Create() {
       </Header>
 
       <Body>
-        <Form>
+        {isLoading ? <Text style={{ width: '100%', textAlign: 'center' }}>Carregando...</Text> : <><Form>
           <Input
             inputRef={nameInputRef}
             label='Nome'
@@ -159,10 +189,10 @@ export function Create() {
           </FormRow>
         </Form>
 
-        <Button
-          title='Cadastrar refeição'
-          onPress={handleCreate}
-        />
+          <Button
+            title='Salvar alterações'
+            onPress={handleEdit}
+          /></>}
       </Body>
     </Container>
   )

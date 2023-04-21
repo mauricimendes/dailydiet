@@ -5,7 +5,7 @@ type LabelProps = {
   type: 'big' | 'small'
 }
 
-export type DietType = 'positive' | 'negative'
+export type DietType = 'above' | 'bellow'
 
 type Props = {
   type: DietType
@@ -17,7 +17,7 @@ type ModalProps = {
 
 export const Container = styled.View<Props>`
   flex: 1;
-  background-color: ${({ theme, type }) => type === 'positive' ? theme.COLORS.GREEN_LIGHT : theme.COLORS.RED_LIGHT};
+  background-color: ${({ theme, type }) => type === 'above' ? theme.COLORS.GREEN_LIGHT : theme.COLORS.RED_LIGHT};
 `
 
 export const Header = styled.View`
@@ -95,7 +95,7 @@ export const DietInfoDot = styled.View<Props>`
   height: 8px;
   border-radius: 4px;
 
-  background-color: ${({ theme, type }) => type === 'positive' ? theme.COLORS.GREEN_DARK : theme.COLORS.RED_DARK} ;
+  background-color: ${({ theme, type }) => type === 'above' ? theme.COLORS.GREEN_DARK : theme.COLORS.RED_DARK} ;
 `
 
 export const DietInfoTitle = styled.Text`

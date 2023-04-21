@@ -4,6 +4,8 @@ import { MEALS_COLLECTION } from '@storage/storageConfig'
 import { MealStorageDTO } from './MealStorageDTO'
 import { mealGetAll } from './mealGetAll'
 import { AppError } from '@utils/AppError'
+import { mealSaveSequence } from './mealSaveSequence'
+import { mealDelteSequence } from './mealDeleteSequence'
 
 export async function mealCreate(newMeal: MealStorageDTO) {
   try {
@@ -18,6 +20,12 @@ export async function mealCreate(newMeal: MealStorageDTO) {
     const storage = JSON.stringify([...storedMeals, newMeal])
 
     await AsyncStorage.setItem(`${MEALS_COLLECTION}`, storage)
+
+    if (newMeal.type === 'above') {
+      await mealSaveSequence()
+    } else {
+      await mealDelteSequence()
+    }
   } catch (error) {
     throw error
   }

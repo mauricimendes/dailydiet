@@ -28,6 +28,7 @@ type Meal = {
   id: string
   name: string
   hour: string
+  date: string
   type: TypeDiet
 }
 
@@ -109,7 +110,7 @@ export function Home() {
           title={`${percentage}%`}
           subtitle='das refeições dentro da dieta'
           dietType={percentage >= 50 ? 'above' : 'bellow'}
-          onPress={() => navigation.navigate('statistic')}
+          onPress={() => navigation.navigate('statistic', { percentage: percentage })}
         />}
 
         <MealsTitle>
@@ -138,7 +139,7 @@ export function Home() {
                   name={item.name}
                   hour={item.hour}
                   type={item.type}
-                  onPress={() => navigation.navigate('details', { meal_id: item.id })}
+                  onPress={() => navigation.navigate('details', { mealId: `${item.date}-${item.hour}` })}
                 />
               )}
               renderSectionHeader={({ section: { title } }) => (

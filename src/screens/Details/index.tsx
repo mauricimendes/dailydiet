@@ -1,6 +1,6 @@
-import { useState } from 'react'
-import { View } from 'react-native'
-import { useNavigation, useRoute } from '@react-navigation/native'
+import { useCallback, useState } from 'react'
+import { Alert, Text, View } from 'react-native'
+import { useFocusEffect, useNavigation, useRoute } from '@react-navigation/native'
 
 import {
   Container,
@@ -23,22 +23,57 @@ import {
   ModalActions
 } from './styles'
 import { Button } from '@components/Button'
+import { MealStorageDTO } from '@storage/meals/MealStorageDTO'
+import { mealGetById } from '@storage/meals/mealGetById'
+import { AppError } from '@utils/AppError'
+import { mealDelete } from '@storage/meals/mealDelete'
 
 type RouteParams = {
-  meal_id: string
+  mealId: string,
 }
 
 export function Details() {
   const route = useRoute()
-  const { meal_id } = route.params as RouteParams
-
   const navigation = useNavigation()
 
-  const [dietType, setDietType] = useState<DietType>('positive')
+  const [isLoading, setIsLoading] = useState(true)
   const [openModal, setOpenModal] = useState(false)
+  const { mealId } = route.params as RouteParams
+  const [meal, setMeal] = useState<MealStorageDTO>({} as MealStorageDTO)
+
+  async function getMeal() {
+    try {
+      setIsLoading(true)
+      const mealS = await mealGetById(mealId)
+      setMeal(mealS)
+    } catch (error) {
+      if (error instanceof AppError) {
+        Alert.alert('Refeições', error.message)
+      } else {
+        console.log(error)
+        Alert.alert('Refeições', 'Não foi possível concluir.')
+      }
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  async function handleDeleteMeal(id: string) {
+    try {
+      await mealDelete(id)
+      navigation.navigate('home')
+    } catch (error) {
+      console.log(error)
+      Alert.alert('Refeições', 'Não foi possível deletar a refeição.')
+    }
+  }
+
+  useFocusEffect(useCallback(() => {
+    getMeal()
+  }, []))
 
   return (
-    <Container type={dietType}>
+    <Container type={meal.type}>
       <Header>
         <BackButton
           onPress={() => navigation.navigate('home')}
@@ -54,13 +89,13 @@ export function Details() {
       </Header>
 
       <Body>
-        <Infos>
+        {isLoading ? <Text style={{ width: '100%', textAlign: 'center' }}>Carregando...</Text> : <><Infos>
           <Label type='big'>
-            Sanduíche
+            {meal.name}
           </Label>
 
           <Description>
-            Sanduíche de pão integral com atum e salada de alface e tomate
+            {meal.description}
           </Description>
 
           <Label type='small' style={{ marginTop: 24 }}>
@@ -68,30 +103,30 @@ export function Details() {
           </Label>
 
           <Description>
-            12/08/2022 às 16:00
+            {`${meal.date} às ${meal.hour}`}
           </Description>
 
           <DietInfo>
-            <DietInfoDot type={dietType} />
+            <DietInfoDot type={meal.type} />
             <DietInfoTitle>
-              {dietType === 'positive' ? 'Dentro da dieta' : 'Fora da dieta'}
+              {meal.type === 'above' ? 'Dentro da dieta' : 'Fora da dieta'}
             </DietInfoTitle>
           </DietInfo>
         </Infos>
 
-        <Actions>
-          <Button
-            icon='edit'
-            title='Editar refeição'
-            onPress={() => navigation.navigate('create')}
-          />
-          <Button
-            icon='trash'
-            title='Excluir refeição'
-            type='outline'
-            onPress={() => setOpenModal(true)}
-          />
-        </Actions>
+          <Actions>
+            <Button
+              icon='edit'
+              title='Editar refeição'
+              onPress={() => navigation.navigate('edit', { mealId: `${meal.date}-${meal.hour}` })}
+            />
+            <Button
+              icon='trash'
+              title='Excluir refeição'
+              type='outline'
+              onPress={() => setOpenModal(true)}
+            />
+          </Actions></>}
       </Body>
 
       {openModal &&
@@ -111,7 +146,7 @@ export function Details() {
               <Button
                 title='Sim, excluir'
                 style={{ flex: 1 }}
-                onPress={() => navigation.navigate('home')}
+                onPress={() => handleDeleteMeal(`${meal.date}-${meal.hour}`)}
               />
             </ModalActions>
           </ModalContent>
