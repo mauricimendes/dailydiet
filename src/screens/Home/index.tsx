@@ -123,6 +123,7 @@ export function Home() {
           icon='add'
           onPress={() => navigation.navigate('create')}
         />
+
         <List>
           {isLoading ?
             <Loading style={{ flex: 1 }}>
@@ -156,10 +157,6 @@ export function Home() {
             />}
         </List>
       </Content>
-      <LinearGradient
-        colors={['transparent', '#FAFAFA']}
-        style={{ position: 'absolute', bottom: 0, width: '100%', height: 160 }}
-      />
     </Container>
   )
 }
